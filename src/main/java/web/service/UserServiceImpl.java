@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import web.dao.UserDao;
+import web.model.Role;
 import web.model.User;
 
 import java.util.List;
@@ -29,7 +30,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void updateUser(User user, int id) {
-        userDao.updateUser(user, id);
+        userDao.updateUserById(user, id);
     }
 
     @Transactional
@@ -42,5 +43,23 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(int id) {
         userDao.deleteUser(id);
+    }
+
+    @Transactional
+    @Override
+    public User getUserByName(String name) {
+        return (User) userDao.getUserByName(name);
+    }
+
+    @Transactional
+    @Override
+    public Role getRoleByName(String name) {
+        return userDao.getRoleByName(name);
+    }
+
+    @Transactional
+    @Override
+    public void addRole(Role role) {
+        userDao.addRole(role);
     }
 }

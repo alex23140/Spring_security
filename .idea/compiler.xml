@@ -7,6 +7,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="Crud_2_3_1" />
+        <module name="Task_2.3.1" />
       </profile>
     </annotationProcessing>
   </component>

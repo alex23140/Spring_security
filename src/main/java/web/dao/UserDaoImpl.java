@@ -1,6 +1,9 @@
 package web.dao;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
+import web.model.Role;
 import web.model.User;
 
 import javax.persistence.EntityManager;
@@ -9,6 +12,19 @@ import java.util.List;
 
 @Repository
 public class UserDaoImpl implements UserDao {
+
+    @Autowired
+    public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    private PasswordEncoder passwordEncoder;
+
+    @Override
+    public void saveUser(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        entityManager.persist(user);
+    }
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -25,21 +41,40 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public void updateUser(User user, int id) {
+    public void updateUserById(User user, int id) {
         User user1 = getUser(id);
+        user.setId(id);
         user1.setName(user.getName());
         user1.setLastName(user.getLastName());
         user1.setEmail(user.getEmail());
+        user1.setAge(user.getAge());
+        user1.setPassword(passwordEncoder.encode(user.getPassword()));
         entityManager.merge(user1);
-    }
-
-    @Override
-    public void saveUser(User user) {
-        entityManager.persist(user);
     }
 
     @Override
     public void deleteUser(int id) {
         entityManager.createQuery("delete from User where id=:id").setParameter("id", id).executeUpdate();
+    }
+
+    @Override
+    public User getUserByName(String name) {
+
+        return entityManager.createQuery("from User where lower(name) like: theName", User.class)
+                .setParameter("theName", "%" + name.toLowerCase() + "%")
+                .getSingleResult();
+    }
+
+
+    @Override
+    public Role getRoleByName(String name) {
+        return entityManager.createQuery("from Role where name = :name", Role.class)
+                .setParameter("name", name).getSingleResult();
+    }
+
+    @Override
+    public void addRole(Role role) {
+        entityManager.persist(role);
+
     }
 }
